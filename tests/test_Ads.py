@@ -10,9 +10,3 @@ def test_Ad():
 
     r1 = Reimbursement(ads)
     print(r1)
-    breakpoint()
-        
-
-    
-
-

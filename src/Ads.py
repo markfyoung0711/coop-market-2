@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 
 class Reimbursement(object):
     '''Reimbursement is used to compute ads of different types,
@@ -14,18 +16,23 @@ class Reimbursement(object):
 
         - filter_ad_type : to build a new Reimbursement object for arbitrary set of add types
 
-        - configure : to set up new valid ad types and their parameters, 
+        - configure : to set up new valid ad types and their parameters,
             cost_share_rate
             allowed_spend_per_ad_range_dollars
             - this is a range object.  for a fixed number, range would be range(200,201) (for $200)
 
     __str__ to print the Ads object associated with the add
     '''
-    
+
     def __init__(self, ads=None):
-        '''Purpose, initialize the reimbursement class with an Ads object
         '''
-        self.summary_dict = {} # indexed by ad_type: {'<ad_type>': <quantity>}
+        Purpose, initialize the reimbursement class with an Ads object
+
+        Parameters:
+        -----------
+        ads: list of Ad objects
+        '''
+        self.summary_dict = {}
         self.ads = ads
         self.summarize()
 
@@ -45,7 +52,7 @@ class Reimbursement(object):
     def filter_ad_type(self, filter):
         '''
         filter: set, from a subset of valid ad_types
-        
+
         returns new Reimbursement object that has ads from current Reimbursement object
         where the ad_type of the included Ads matches any of the ad types in filter
 
@@ -74,7 +81,6 @@ class Reimbursement(object):
 
     def __str__(self):
         return '\n'.join([str(ad) for ad in self.ads])
-    
 
 
 class Ads(list):
@@ -88,13 +94,11 @@ class Ads(list):
 
 class Ad(object):
 
-    VALID_AD_TYPES = set(['0011', '1011', '1111', '1010'])
-
-    def __init__(self, ad_type, ad_name):
-
-        self.ad_type = ad_type
-        self.ad_name = ad_name
+    def __init__(self, type, name, balance=0):
+        self.aid = uuid4()
+        self.type = type
+        self.name = name
+        self.balance = balance
 
     def __str__(self):
-        return f'Ad_type: {self.ad_type} ... {self.ad_name}'
-
+        return f'Ad_type: {self.type} ... {self.name}'
