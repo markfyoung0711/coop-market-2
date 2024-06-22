@@ -88,8 +88,8 @@ class Ads(list):
     This is a list of Ad objects
     '''
 
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, ad_list=[]):
+        super().__init__(ad_list)
 
 
 class Ad(object):
@@ -101,4 +101,4 @@ class Ad(object):
         self.balance = balance
 
     def __str__(self):
-        return f'Ad_type: {self.type} ... {self.name}'
+        return f'Ad_type: {str(self.type)} ... {self.name}'
