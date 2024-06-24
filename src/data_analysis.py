@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 
 df = pd.read_csv('data/task3_dateset.csv', dtype=str)
@@ -41,6 +40,7 @@ for name, df_single in dfg:
     results.append(fixed_result)
 
 final_result = pd.concat(results, ignore_index=True)
+final_result = final_result.drop(columns=['index'])
 outfile = 'corrected.csv'
 final_result.to_csv(outfile, index=False)
 print(f'corrected data written to {outfile}')

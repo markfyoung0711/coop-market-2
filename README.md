@@ -1,5 +1,17 @@
 
-# Instruction:
+# Solution:
+
+Please make sure to use python 3.11
+
+To start: source setup.sh will set up the python requirements.
+Task 1: jupyter notebook - for score analysis, ran src/notebook_score_analyzer.ipynb
+Task 2: run_task2_tests.sh will run the tests for the Ads, Ad, and Reimburesement classes
+Task 3: python src/data_analysis.py
+
+to run the Task 3 data analysis, 
+
+# Instructions
+
 - Please submit all your code, output, and charts or visualization.
 - Ideally use a code Notebook, e.g. Jupyter, to capture all above, except for the demo app.
 - You may choose to submit plain .py files or share a code repo.
