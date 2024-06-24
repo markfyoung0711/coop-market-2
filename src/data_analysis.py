@@ -24,7 +24,8 @@ def fix(name, df):
 
     sample = df[df['Ads_Run'] != 0].head(1)
     offset = sample.index.values[0] - sample['Ads_Run'].values[0]
-    df.loc[df['Ads_Run'] == 0, 'Corrected_Ads_Run'] = df.loc[df['Ads_Run'] == 0, 'index'] - offset
+    fix_idx = (df['index'] + offset) != df['Ads_Run']
+    df.loc[fix_idx, 'Corrected_Ads_Run'] = df.loc[fix_idx, 'index'] - offset
     df.loc[df['Corrected_Ads_Run'] == 0, 'Corrected_Ads_Run'] = 1
     df.loc[df['Corrected_Ads_Run'] < 0, 'Corrected_Ads_Run'] = 1
     df.loc[df['Corrected_Ads_Run'].isnull(), 'Corrected_Ads_Run'] = df.loc[df['Corrected_Ads_Run'].isnull(), 'Ads_Run']
