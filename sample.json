@@ -1,0 +1,8 @@
+{
+    "condition1_limit1": 0.35,
+    "condition1_limit2": 0.35,
+    "condition2_limit1": 0.20,
+    "condition2_limit2": 0.90,
+    "condition3_limit1": 0.15,
+    "condition3_limit2": 0.80
+}

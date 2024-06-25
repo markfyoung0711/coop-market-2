@@ -1,4 +1,4 @@
-def score_analyzer(df):
+def score_analyzer(df, config):
     '''
     Purpose:
     --------
@@ -9,6 +9,8 @@ def score_analyzer(df):
     df: dataframe, with two columns with score data in them
         - 'score_1' must be a float between 0 and 1
         - 'score_2' must be a float between 0 and 1
+
+    config: dict with limit variables
 
     Returns:
     --------
@@ -38,9 +40,9 @@ def score_analyzer(df):
         if df[col].isnull().any():
             raise Exception(f'There are null values for {col}')
 
-    idx = (((df['score_1'] < 0.35) & (df['score_2'] < .35)) |
-           ((df['score_1'] < 0.20) & (df['score_2'] < .90)) |
-           ((df['score_1'] < 0.15) & (df['score_2'] < .80)))
+    idx = (((df['score_1'] < config['condition1_limit1'] ) & (df['score_2'] < config['condition1_limit2'])) |
+           ((df['score_1'] < config['condition2_limit1']) & (df['score_2'] < config['condition2_limit2'])) |
+           ((df['score_1'] < config['condition3_limit1']) & (df['score_2'] < config['condition3_limit2'])))
     df.loc[idx, 'highlighted'] = True
     df.loc[~idx, 'highlighted'] = False
 
