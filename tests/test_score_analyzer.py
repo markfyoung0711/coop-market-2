@@ -1,3 +1,4 @@
+import json
 import random
 from io import StringIO
 
@@ -101,6 +102,7 @@ def test_score_analyzer():
     # result = score_analyzer(test_df)
 
     test_df = generate_raw_data()
-    results = score_analyzer(test_df)
+    config = json.loads(open('sample.json').read())
+    results = score_analyzer(test_df, config)
     assert((results['expected_highlighted'] == results['highlighted']).all())
     assert((results['expected_risk_1_group'] == results['risk_1_group']).all())
