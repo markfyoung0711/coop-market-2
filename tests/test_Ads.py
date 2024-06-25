@@ -45,42 +45,45 @@ def test_Reimbursement():
         1010  1400                  0         1000         1000
     '''
 
-    ads = Ads([Ad(type='0011', name='Chicago Bears', cost=200.0),
+    ads = Ads([Ad(type='0011', name='Chicago Bears', cost=400.0),
                Ad(type='0011', name='Chicago Fire', cost=400.0),
-               Ad(type='0011', name='Mount Carmel Caravan', cost=402.0),
-               Ad(type='1010', name='Miami Dolphins', cost=555.0),
-               Ad(type='1010', name='Miami Hurricanes', cost=1555.0),])
+               Ad(type='0011', name='Mount Carmel Caravan', cost=400.0),
+               Ad(type='1010', name='Miami Dolphins', cost=700.0),
+               Ad(type='1010', name='Miami Hurricanes', cost=833.0),])
 
     # Test bad construction.
     with pytest.raises(TypeError):
         Reimbursement()
 
-    parameters = [{'ad_type': '0011', 'cost_share_rate': .5, 'minimum_spend_per_ad': 200, 'maximum_spend_per_ad': 201},
-                  {'ad_type': '1011', 'cost_share_rate': 1.0, 'minimum_spend_per_ad': 1000, 'maximum_spend_per_ad': 2001},
-                  {'ad_type': '1111', 'cost_share_rate': .75, 'minimum_spend_per_ad': 500, 'maximum_spend_per_ad': 501},
-                  {'ad_type': '1010', 'cost_share_rate': .90, 'minimum_spend_per_ad': 0, 'maximum_spend_per_ad': 751},]
+    ad_types = [{'ad_type': '0011', 'cost_share_rate': .5, 'minimum_spend_per_ad': 200, 'maximum_spend_per_ad': 200.01},
+                {'ad_type': '1011', 'cost_share_rate': 1.0, 'minimum_spend_per_ad': 1000, 'maximum_spend_per_ad': 2000.01},
+                {'ad_type': '1111', 'cost_share_rate': .75, 'minimum_spend_per_ad': 500, 'maximum_spend_per_ad': 500.01},
+                {'ad_type': '1010', 'cost_share_rate': .90, 'minimum_spend_per_ad': 0, 'maximum_spend_per_ad': 750.01},]
 
     # Test getting ads, ad_types,
-    reimbursement = Reimbursement(parameters=parameters, ads=ads)
-    assert(reimbursement.get_ads() == ads)
+    reimbursement = Reimbursement(ad_types=ad_types, ads=ads)
+    reimbursement.add_ad(Ad(type='1234', name='Bad Ad', cost=833.0))
+    # this will not be added b/c 777 * .75 > 500
+    reimbursement.add_ad(Ad(type='1111', name='Good Ad but Bad Cost', cost=777.0))
+    # this will be added and we will check the ad type is there
+    reimbursement.add_ad(Ad(type='1111', name='Good Ad but Bad Cost', cost=666.67))
+    assert(reimbursement.get_ad_types() == set(['0011', '1010', '1111']))
+    # remove all ads of a certain type
+    reimbursement.remove_ads_by_type(['1111'])
     assert(reimbursement.get_ad_types() == set(['0011', '1010']))
+    assert(reimbursement.get_ads() == ads)
 
     # Test reimbursement amounts per Ad, and total of all Ads
     results = reimbursement.compute()
-    # Bears: they did not spend enough, minimum was 200
-    assert(results.loc[results['name'] == 'Chicago Bears', 'reimbursement'].values[0] == 0)
-    # Fire: spent exactly the minimum
+    assert(results.loc[results['name'] == 'Chicago Bears', 'reimbursement'].values[0] == 200)
     assert(results.loc[results['name'] == 'Chicago Fire', 'reimbursement'].values[0] == 200)
-    # Caravan: spent over maximum
     assert(results.loc[results['name'] == 'Mount Carmel Caravan', 'reimbursement'].values[0] == 200)
-    # Dolphins: should get 499.5 back
-    assert(results.loc[results['name'] == 'Miami Dolphins', 'reimbursement'].values[0] == 499.5)
-    # Hurricanes: should get 750 back
-    assert(results.loc[results['name'] == 'Miami Hurricanes', 'reimbursement'].values[0] == 750)
+    assert(results.loc[results['name'] == 'Miami Dolphins', 'reimbursement'].values[0] == 630.0)
+    assert(results.loc[results['name'] == 'Miami Hurricanes', 'reimbursement'].values[0] == 749.7)
 
     # Task 2: Requirement 5
     reimbursement_total = reimbursement.compute_reimbursement_total(results)
-    assert(reimbursement_total == 1649.5)
+    assert(reimbursement_total == 1979.7)
 
     '''
     Sample of merged results
@@ -98,4 +101,4 @@ def test_Reimbursement():
     reimb2 = reimbursement.filter_ad_type(set(['0011']))
     results = reimb2.compute()
     total = reimb2.compute_reimbursement_total(results)
-    assert(total == 400)
+    assert(total == 600)
