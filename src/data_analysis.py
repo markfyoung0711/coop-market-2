@@ -1,4 +1,6 @@
 import pandas as pd
+import multiprocessing
+import time
 
 
 class ZeroForAll(Exception):
@@ -6,13 +8,12 @@ class ZeroForAll(Exception):
     pass
 
 
-df = pd.read_csv('data/task3_dateset.csv', dtype=str)
-
-
-def fix(name, df):
+def fix(arg):
     '''
     fix the dataframe
     '''
+    name = arg[0]
+    df = arg[1]
 
     df['Date'] = pd.to_datetime(df['Date'], format='%m/%d/%y')
     df['Ads_Run'] = df['Ads_Run'].fillna(0)
@@ -53,15 +54,52 @@ def fix(name, df):
     return df
 
 
-results = []
-dfg = df.groupby('Site')
-for name, df_single in dfg:
-    # For the optimization: use multiprocessing for the "fix" function. One process per Group
-    fixed_result = fix(name, df_single)
-    results.append(fixed_result)
+def multi_process(dfg):
+    results = []
 
-final_result = pd.concat(results, ignore_index=True)
-final_result = final_result.drop(columns=['index'])
-outfile = 'corrected.csv'
-final_result.to_csv(outfile, index=False)
-print(f'corrected data written to {outfile}')
+    multiprocessing.freeze_support()
+    pool = multiprocessing.Pool()
+    results = pool.map(fix, dfg)
+
+    '''
+    # single process
+    for name, df_single in dfg:
+        # For the optimization: use multiprocessing for the "fix" function. One process per Group
+        fixed_result = fix(name, df_single)
+        results.append(fixed_result)
+    '''
+
+    final_result = pd.concat(results, ignore_index=True)
+    final_result = final_result.drop(columns=['index'])
+    return final_result
+
+
+def single_process(dfg):
+    results = []
+
+    # single process
+    for name_and_df in dfg:
+        # For the optimization: use multiprocessing for the "fix" function. One process per Group
+        fixed_result = fix(name_and_df)
+        results.append(fixed_result)
+
+    final_result = pd.concat(results, ignore_index=True)
+    final_result = final_result.drop(columns=['index'])
+    return final_result
+
+
+if __name__ == '__main__':
+    df = pd.read_csv('data/task3_dateset.csv', dtype=str)
+    dfg = df.groupby('Site')
+
+    start_time = time.time()
+    final_result = single_process(dfg)
+    print(f'single {time.time() - start_time} seconds')
+    outfile = 'corrected.single.csv'
+    final_result.to_csv(outfile, index=False)
+
+    start_time = time.time()
+    final_result = multi_process(dfg)
+    print(f'multi {time.time() - start_time} seconds')
+    outfile = 'corrected.multi.csv'
+    final_result.to_csv(outfile, index=False)

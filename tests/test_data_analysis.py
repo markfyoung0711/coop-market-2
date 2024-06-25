@@ -34,14 +34,14 @@ def test_fix():
     df_C = df_test[df_test['Site'] == 'C']
     df_D = df_test[df_test['Site'] == 'D']
 
-    df_fixedA = fix('A', df_A)
+    df_fixedA = fix(['A', df_A])
     assert(df_fixedA['Corrected_Ads_Run'].tolist() == [10, 11, 12, 13, 14])
 
-    df_fixedB = fix('B', df_B)
+    df_fixedB = fix(['B', df_B])
     assert(df_fixedB['Corrected_Ads_Run'].tolist() == [1, 2, 3, 4, 5])
 
     with pytest.raises(ZeroForAll):
-        _ = fix('C', df_C)
+        _ = fix(['C', df_C])
 
-    df_fixedD = fix('D', df_D)
+    df_fixedD = fix(['D', df_D])
     assert('Corrected_Ads_Run' not in df_fixedD.columns)
