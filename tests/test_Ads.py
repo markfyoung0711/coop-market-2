@@ -20,6 +20,8 @@ def test_Ad():
     ads.append(ad2)
     assert(len(ads) == 2)
 
+    assert(ads[0]['type'] == '0011')
+
     # Task 2: Requirement 4
     assert(ads.__str__() == f"AID: {ad1['aid']}, AdType: 0011, Name: Chicago Bears, Cost: 1000000.00\n"
                             f"AID: {ad2['aid']}, AdType: 1111, Name: Chicago Public Schools, Cost: 450000.00")
